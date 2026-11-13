@@ -1,0 +1,29 @@
+PRIYA KI KAHANIYA — MIDNIGHT ROMANCE UPGRADE
+
+क्या नया है:
+- Midnight Romance palette: deep burgundy, charcoal, warm gold.
+- Text-only premium story cards.
+- Redesigned reading page with font size controls, light/dark toggle, local bookmarks and related stories.
+- Responsive homepage, category sidebar, search and pagination.
+- Existing Firebase Auth/Admin publishing workflow retained.
+- Firestore rules file में आपके दिए admin UID को रखा गया है।
+
+IMPORTANT FIRESTORE RULES:
+Firebase Console > Firestore Database > Rules में इस ZIP की firestore.rules फाइल का code publish करें। पुराने rules में placeholder UID था, जिससे admin operations fail हो सकते थे।
+
+ADSTERRA:
+इस ZIP में सिर्फ clearly labelled ad placeholder areas हैं; कोई Adsterra script नहीं जोड़ी गई। Adult/mature story category के लिए publisher approval और policy eligibility पहले लिखित रूप में confirm करें। Provider approval के बिना ad script न लगाएँ।
+
+VIEWS:
+Public page से Firestore views increment हटाया गया है क्योंकि मौजूदा security rules public writes allow नहीं करते। सही live view analytics के लिए trusted server/Cloud Function और abuse protection चाहिए।
+
+DEPLOY:
+1. Backup लेकर इस ZIP की files GitHub repository में upload/replace करें।
+2. Firebase Console में firestore.rules publish करें।
+3. GitHub Pages deploy complete होने दें और homepage, admin login, publish/edit/delete test करें।
+4. Existing Firebase project/config/admin UID इस ZIP में preserve किए गए हैं।
+
+AD MONETIZATION UPDATE:
+- Adsterra scripts have intentionally NOT been activated.
+- See AD-MONETIZATION-IMPORTANT-HI.txt for the policy reason and next steps.
+- ads-config.js is a disabled configuration stub; it does not load third-party scripts.

@@ -3,12 +3,10 @@ service cloud.firestore {
   match /databases/{database}/documents {
     function isAdmin() {
       return request.auth != null
-        && request.auth.uid == "PASTE_ADMIN_USER_UID";
+        && request.auth.uid == "9LOh8MsErVUbC7EurQYRz6fpMND2";
     }
-
     match /stories/{storyId} {
-      // Public can read published stories; only the configured admin can read drafts.
-      allow read: if resource.data.status == "published" || isAdmin();
+      allow read: if (resource.data.status == "published") || isAdmin();
       allow create, update, delete: if isAdmin();
     }
   }

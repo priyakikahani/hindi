@@ -4,7 +4,7 @@
 
   const PAGE_SIZE = 8;
   const $ = (id) => document.getElementById(id);
-  const state = { db: null, auth: null, stories: [], category: "", mode: "popular", page: 1, search: "", user: null };
+  const state = { db: null, auth: null, stories: [], category: "", mode: "popular", page: 1, search: "", user: null, currentStory: null, readingSize: 18 };
 
   const esc = (s = "") => String(s).replace(/[&<>"']/g, c => ({
     "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
@@ -90,35 +90,43 @@
   function render() {
     if (location.hash.startsWith("#/story/")) return renderStory(location.hash.split("/")[2]);
     if (location.hash.startsWith("#/admin")) return renderAdmin();
-    if (location.hash.startsWith("#/privacy")) return renderStatic("Privacy Policy", "हम इस starter website में analytics या advertising tracking अपने-आप चालू नहीं करते। यदि आप कोई tracking service जोड़ते हैं, तो अपनी privacy policy अपडेट करें।");
-    if (location.hash.startsWith("#/contact")) return renderStatic("Contact", "संपर्क के लिए वेबसाइट संचालक द्वारा दिया गया आधिकारिक ईमेल यहाँ जोड़ें।");
+    if (location.hash.startsWith("#/privacy")) return renderStatic("Privacy Policy", "हम इस वेबसाइट पर आवश्यक सेवाओं के अलावा कोई tracking अपने-आप चालू नहीं करते। विज्ञापन या analytics जोड़ने पर इस नीति को अपडेट किया जाएगा।");
+    if (location.hash.startsWith("#/contact")) return renderStatic("Contact", "संपर्क के लिए वेबसाइट संचालक का आधिकारिक ईमेल यहाँ जोड़ें।");
+    if (location.hash.startsWith("#/bookmarks")) return renderBookmarks();
     if (location.hash.startsWith("#/popular")) state.mode = "popular";
     else if (location.hash.startsWith("#/latest")) state.mode = "latest";
     else if (location.hash.startsWith("#/category/")) state.category = decodeURIComponent(location.hash.split("/")[2] || "");
     else state.category = "";
-
+    const isHome = !location.hash || location.hash === "#/";
+    $("hero").hidden = !isHome;
+    $("section-kicker").textContent = state.category ? "BROWSE CATEGORY" : (state.mode === "latest" ? "FRESHLY PUBLISHED" : "MOST LOVED STORIES");
     $("page-title").textContent = state.category || (state.mode === "latest" ? "नई कहानियाँ" : "लोकप्रिय कहानियाँ");
     const list = filteredStories();
     const pages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
     state.page = Math.min(state.page, pages);
     const start = (state.page - 1) * PAGE_SIZE;
     const pageItems = list.slice(start, start + PAGE_SIZE);
-    $("story-list").innerHTML = pageItems.length ? pageItems.map(cardHTML).join("") :
-      `<article class="story-card"><h2>अभी कोई कहानी उपलब्ध नहीं है</h2><p>Admin Panel से पहली कहानी प्रकाशित करें।</p></article>`;
+    $("story-list").innerHTML = pageItems.length ? pageItems.map(cardHTML).join("") : `<article class="story-card empty-state"><h2>अभी कोई कहानी उपलब्ध नहीं है</h2><p>नई कहानियाँ जल्द प्रकाशित होंगी।</p></article>`;
     $("pagination").innerHTML = pages > 1 ? paginationHTML(pages) : "";
     const cats = [...new Set(state.stories.map(s => s.category).filter(Boolean))].sort();
     $("category-list").innerHTML = `<a href="#/">सभी कहानियाँ</a>` + cats.map(c => `<a href="#/category/${encodeURIComponent(c)}">${esc(c)}</a>`).join("");
   }
 
   function cardHTML(s) {
-    return `<article class="story-card">
-      <h2><a href="#/story/${encodeURIComponent(s.slug || s.id)}">${esc(s.title || "बिना शीर्षक")}</a></h2>
+    return `<article class="story-card"><h2><a href="#/story/${encodeURIComponent(s.slug || s.id)}">${esc(s.title || "बिना शीर्षक")}</a></h2>
       <p class="story-description">${esc(s.description || "")}</p>
-      <div class="story-meta"><span>◉ ${(Number(s.views)||0).toLocaleString("en-IN")} Views</span><span>${esc(dateText(s.createdAt))}</span></div>
+      <div class="story-meta"><span>◉ ${(Number(s.views)||0).toLocaleString("en-IN")} READS</span><span>${esc(dateText(s.createdAt))}</span></div>
       <div class="story-category">${esc(s.category || "अन्य")}</div>
       <div class="story-tags">${(s.tags || []).map(t => `<span>${esc(t)}</span>`).join("")}</div>
-      <a class="read-more" href="#/story/${encodeURIComponent(s.slug || s.id)}">पूरी कहानी पढ़ें →</a>
-    </article>`;
+      <a class="read-more" href="#/story/${encodeURIComponent(s.slug || s.id)}">कहानी पढ़ें <span>→</span></a></article>`;
+  }
+
+  function renderBookmarks() {
+    $("hero").hidden = true; $("section-kicker").textContent = "YOUR READING LIST"; $("page-title").textContent = "आपकी बुकमार्क कहानियाँ";
+    const ids = JSON.parse(localStorage.getItem("pkk-bookmarks") || "[]");
+    const items = state.stories.filter(s => ids.includes(s.id));
+    $("story-list").innerHTML = items.length ? items.map(cardHTML).join("") : `<article class="story-card empty-state"><h2>अभी कोई बुकमार्क नहीं</h2><p>कहानी पढ़ते समय ☆ बटन दबाकर उसे यहाँ सेव करें।</p></article>`;
+    $("pagination").innerHTML = "";
   }
 
   function paginationHTML(pages) {
@@ -129,27 +137,35 @@
   }
 
   async function renderStory(slug) {
+    $("hero").hidden = true;
     let s = state.stories.find(x => x.slug === slug || x.id === slug);
     if (!s && state.db) {
-      try {
-        const snap = await state.db.collection("stories").where("slug","==",slug).limit(1).get();
-        if (!snap.empty) s = { id:snap.docs[0].id, ...snap.docs[0].data() };
-      } catch (_) {}
+      try { const snap = await state.db.collection("stories").where("slug","==",slug).limit(1).get(); if (!snap.empty) s = { id:snap.docs[0].id, ...snap.docs[0].data() }; } catch (_) {}
     }
+    state.currentStory = s || null;
+    $("section-kicker").textContent = "TAKE YOUR TIME";
     $("page-title").textContent = s ? s.title : "कहानी";
     $("pagination").innerHTML = "";
     $("category-list").innerHTML = `<a href="#/">सभी कहानियाँ</a>`;
-    $("story-list").innerHTML = s ? `<article class="story-card full-story">
-      <a class="back-link" href="#/">← सभी कहानियों पर वापस जाएँ</a>
-      <h2>${esc(s.title)}</h2>
-      <p class="story-description">${esc(s.description || "")}</p>
-      <div class="story-meta"><span>◉ ${(Number(s.views)||0).toLocaleString("en-IN")} Views</span><span>${esc(dateText(s.createdAt))}</span></div>
-      <div class="story-content">${esc(s.content || "").split(/\n{2,}/).map(p=>`<p>${p.replace(/\n/g,"<br>")}</p>`).join("")}</div>
+    if (!s) { $("story-list").innerHTML = `<article class="story-card"><h2>कहानी नहीं मिली</h2><a href="#/">होम पर जाएँ</a></article>`; return; }
+    const saved = JSON.parse(localStorage.getItem("pkk-bookmarks") || "[]").includes(s.id);
+    const related = state.stories.filter(x => x.id !== s.id && x.category && x.category === s.category).slice(0,4);
+    $("story-list").innerHTML = `<article class="story-card full-story">
+      <a class="back-link" href="#/">← सभी कहानियों पर वापस जाएँ</a><h2>${esc(s.title)}</h2><p class="story-description">${esc(s.description || "")}</p>
+      <div class="story-meta"><span>◉ ${(Number(s.views)||0).toLocaleString("en-IN")} READS</span><span>${esc(dateText(s.createdAt))}</span><span>${esc(s.category || "")}</span></div>
+      <div class="reading-toolbar"><button id="font-down" aria-label="छोटा अक्षर">A−</button><button id="font-up" aria-label="बड़ा अक्षर">A+</button><button id="reading-theme">☼ Light</button><span class="toolbar-spacer"></span><button id="bookmark-btn" class="${saved?"saved":""}">${saved?"★ Saved":"☆ Save"}</button></div>
+      <div class="story-ad ad-slot story-ad" data-ad-slot="story-top"><span>ADVERTISEMENT</span><small>विज्ञापन स्थान</small></div>
+      <div class="story-content" id="story-content">${esc(s.content || "").split(/\n{2,}/).map(p=>`<p>${p.replace(/\n/g,"<br>")}</p>`).join("")}</div>
+      <div class="story-ad ad-slot story-ad" data-ad-slot="story-bottom"><span>ADVERTISEMENT</span><small>विज्ञापन स्थान</small></div>
       <div class="story-category">${esc(s.category || "")}</div>
-    </article>` : `<article class="story-card"><h2>कहानी नहीं मिली</h2><a href="#/">होम पर जाएँ</a></article>`;
-    if (s && state.db && !String(s.id).startsWith("demo-")) {
-      try { await state.db.collection("stories").doc(s.id).update({ views: firebase.firestore.FieldValue.increment(1) }); } catch (_) {}
-    }
+      ${related.length ? `<h3 class="related-heading">इसी तरह की और कहानियाँ</h3><div class="related-list">${related.map(x=>`<a class="related-item" href="#/story/${encodeURIComponent(x.slug||x.id)}">${esc(x.title)}<small>${esc(x.category||"")}</small></a>`).join("")}</div>` : ""}
+    </article>`;
+    const content = $("story-content"); content.style.fontSize = state.readingSize + "px";
+    $("font-down").onclick = () => { state.readingSize=Math.max(15,state.readingSize-1); content.style.fontSize=state.readingSize+"px"; };
+    $("font-up").onclick = () => { state.readingSize=Math.min(25,state.readingSize+1); content.style.fontSize=state.readingSize+"px"; };
+    $("reading-theme").onclick = () => { document.body.classList.toggle("reading-light"); $("reading-theme").textContent=document.body.classList.contains("reading-light")?"☾ Dark":"☼ Light"; };
+    $("bookmark-btn").onclick = () => { let ids=JSON.parse(localStorage.getItem("pkk-bookmarks")||"[]"); if(ids.includes(s.id)) ids=ids.filter(id=>id!==s.id); else ids.push(s.id); localStorage.setItem("pkk-bookmarks",JSON.stringify(ids)); const on=ids.includes(s.id); $("bookmark-btn").textContent=on?"★ Saved":"☆ Save"; $("bookmark-btn").classList.toggle("saved",on); };
+    // Public clients cannot update Firestore view counters under secure rules. Do not attempt a denied write.
   }
 
   function renderStatic(title, body) {
