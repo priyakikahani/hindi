@@ -1,22 +1,9 @@
-PRIYA KI KAHANIYA — AD MONETIZATION STATUS
+Adsterra setup enabled
 
-Adsterra tags supplied by the site owner have NOT been embedded or activated.
+Publisher-provided formats enabled in index.html:
+1. Popunder: site-wide script.
+2. Social Bar: site-wide script.
+3. Native Banner: sidebar placement.
+4. Smart Link: clearly labelled sponsored link in footer.
 
-Reason:
-The Adsterra Publisher Terms available as of 29 June 2026 list pornography and adult/mature content among prohibited/inappropriate publisher-site content. The current Priya Ki Kahaniya concept is adult-oriented, so installing Popunder, Smartlink, Social Bar, or Native Banner tags could put publisher approval/account status at risk.
-
-Before using any Adsterra format:
-1. Ask Adsterra Publisher Support in writing whether this exact website and its actual content category are eligible.
-2. Keep the written approval and ensure it explicitly covers the requested formats.
-3. Only after approval, add tags exactly as provided by Adsterra, on the approved domain only, and follow their placement instructions.
-4. Do not disguise, miscategorize, or hide the site's content to obtain approval.
-
-Current ZIP status:
-- Existing ad placeholders remain visual placeholders only.
-- No third-party Adsterra JavaScript is loaded.
-- No Popunder is activated.
-- No Smartlink is inserted.
-- Firebase configuration and existing admin workflow are retained.
-
-Policy reference:
-https://adsterra.com/publishers-terms/
+Live deploy ke baad mobile aur desktop dono par test karein. Adsterra dashboard mein domain approval aur ad status check karte rahein. Agar popunder/social bar unwanted redirects ya usability issue karein, us placement ko hata dein. Apni written publisher approval aur current Adsterra policies ke mutabik content publish karein.

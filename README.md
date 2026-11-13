@@ -69,3 +69,13 @@ You can open `index.html` for the public demo layout. Firebase authentication an
 - **Login failed:** Confirm Email/Password provider is enabled and the user exists.
 - **Admin access denied:** The logged-in UID must exactly match `window.ADMIN_UID`.
 - **No stories:** Publish a story from Admin. Drafts are not public.
+
+
+## Adsterra integration
+The following publisher-provided placements are enabled in `index.html`:
+- Popunder script (site-wide)
+- Social Bar script (site-wide)
+- Native Banner script in the sidebar
+- Smartlink as a clearly labelled sponsored link in the footer
+
+These are third-party scripts and can change page behaviour. Test on desktop and mobile, review the Adsterra dashboard for impressions, and remove any placement that causes unwanted redirects, deceptive overlays, or poor usability. Confirm that the live domain and all published content continue to comply with your publisher approval and current Adsterra terms.
