@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Priya Ki Kahaniya — हिंदी में मौलिक कहानियाँ, प्रेम, रिश्ते और जीवन के एहसास।">
+  <meta name="theme-color" content="#e7dfc3">
+  <title>Priya Ki Kahaniya | हिंदी कहानियाँ</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#/">Priya Ki Kahaniya <span>हर कहानी में एक नया एहसास...</span></a>
+      <nav>
+        <a href="#/">होम</a>
+        <a href="#/popular">लोकप्रिय</a>
+        <a href="#/latest">नई कहानियाँ</a>
+        <a href="#/admin" class="admin-link">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="main-column">
+      <div class="topline">
+        <div>
+          <p class="eyebrow">हिंदी कहानी संग्रह</p>
+          <h1 id="page-title">लोकप्रिय कहानियाँ</h1>
+        </div>
+        <div class="search-wrap">
+          <input id="search-input" type="search" placeholder="कहानी खोजें..." aria-label="कहानी खोजें">
+        </div>
+      </div>
+      <div id="notice" class="notice" hidden></div>
+      <div id="story-list" class="story-list">
+        <article class="story-card"><h2>कहानियाँ लोड हो रही हैं...</h2><p>कृपया थोड़ी देर प्रतीक्षा करें।</p></article>
+      </div>
+      <div id="pagination" class="pagination"></div>
+    </section>
+
+    <aside class="sidebar">
+      <section class="side-box">
+        <h2>कहानी श्रेणियाँ</h2>
+        <div id="category-list" class="category-list">
+          <a href="#/">सभी कहानियाँ</a>
+        </div>
+      </section>
+      <section class="side-box about-box">
+        <h2>हमारे बारे में</h2>
+        <p>Priya Ki Kahaniya पर पढ़ें मौलिक, काल्पनिक और जिम्मेदार हिंदी कहानियाँ।</p>
+      </section>
+    </aside>
+  </main>
+
+  <footer class="site-footer">
+    <p>© <span id="year"></span> Priya Ki Kahaniya. सर्वाधिकार सुरक्षित।</p>
+    <p class="footer-links"><a href="#/privacy">Privacy</a> · <a href="#/contact">Contact</a> · <a href="#/admin">Admin Login</a></p>
+    <p class="disclaimer">यह मंच केवल कानूनी, सहमति-आधारित और वयस्क पात्रों वाली मौलिक काल्पनिक कहानियों के लिए है।</p>
+  </footer>
+
+  <div id="app-modal" class="modal" hidden></div>
+
+  <!-- Firebase compat SDKs. Configure firebase-config.js before use. -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
